@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id="testimonials"></div>
+    <style>
+        .preamble__title {
+            margin-bottom: 10px;
+        }
+
+        .preamble__title--thin {
+            font-weight: 300;
+        }
+
+        .preamble__text {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .accordion {
+            padding: 1rem;
+            width: 100%;
+            font-size: .8rem;
+            font-weight: 400;
+            letter-spacing: 0.02rem;
+            color: #000000;
+            background-color: transparent;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            transition: 0.4s;
+            border-radius: 6px;
+            font-family: Gabarito, sans-serif;
+            margin-bottom: 1rem;
+        }
+
+        .accordion::after {
+            content: "+";
+            margin-left: 10px;
+            font-weight: 300;
+            font-size: 1.2rem;
+            color: #000;
+            display: inline-block;
+            transition: all 0.4s;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .accordion--active::after {
+            /* font-size: 20px; */
+            transform: rotate(-45deg);
+        }
+
+        .panel {
+            max-height: 0;
+            overflow: hidden;
+            font-size: 0.7rem;
+            line-height: 24px;
+            transition: max-height 300ms ease-out;
+            text-align: left;
+            font-family: Gabarito, sans-serif;
+            color: #333;
+        }
+
+        .panel__inner {
+            padding: 0 10px 10px 10px;
+            margin-bottom: 20px;
+        }
+
+        .panel p {
+            margin: 0 0 15px;
+        }
+
+        .panel p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+    <script>
+        const myHeaders = new Headers()
+        myHeaders.append("Content-Type", "application/json")
+        myHeaders.append("X-Appwrite-Response-Format", "1.4.0")
+        myHeaders.append("X-Appwrite-Project", "654a268c90dbc4a33420")
+
+        const requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow"
+        }
+
+        const testimonials = document.getElementById('testimonials')
+        fetch("https://cloud.appwrite.io/v1/databases/654a277c133c79a331b3/collections/faq/documents", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+                JSON.parse(result).documents.forEach(item => {
+                    const template = `<button class="accordion">
+                        <span class="accordion__title">
+                            ${item.title}
+                        </span>
+                    </button>
+                    <div class="panel">
+                        <div class="panel__inner">
+                            ${item.decs}
+                        </div>
+                    </div>`
+
+                    testimonials.innerHTML += template
+                })
+
+                let accordion = document.getElementsByClassName("accordion")
+                for (let i = 0; i < accordion.length; i++) {
+                    accordion[i].addEventListener("click", function (event) {
+                        this.classList.toggle("accordion--active")
+                        let panel = this.nextElementSibling
+                        if (panel.style.maxHeight) {
+                            panel.style.maxHeight = null
+                        } else {
+                            closeAll(event.target)
+                            this.classList.toggle("active")
+                            panel.style.maxHeight = panel.scrollHeight + "px"
+                        }
+                    })
+                }
+
+                function closeAll(tar) {
+                    let accordions = document.querySelectorAll(".accordion")
+                    for (let i = 0; i < accordions.length; i++) {
+                        accordions[i].classList.remove("active")
+                        let panel = accordions[i].nextElementSibling
+                        panel.style.maxHeight = null
+                    }
+                }
+            })
+            .catch((error) => console.error(error))
+    </script>
+</body>
+
+</html>
