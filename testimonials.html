@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="glide">
+        <div class="glide__track" data-glide-el="track">
+            <ul class="glide__slides text-center" id="testimonials">
+            </ul>
+        </div>
+
+        <div class="glide__arrows" data-glide-el="controls">
+            <button class="glide__arrow glide__arrow--left text-dark" data-glide-dir="<">prev</button>
+            <button class="glide__arrow glide__arrow--right text-dark" data-glide-dir=">">next</button>
+        </div>
+
+        <div class="glide__bullets" data-glide-el="controls[nav]" id="testimonials-dots"></div>
+    </div>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .glide {
+            margin: 3rem auto 0;
+            max-width: 850px;
+        }
+
+        .glide__track {
+            cursor: -webkit-grab;
+            cursor: grab;
+            overflow-x: hidden;
+        }
+
+        .glide__slides {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            list-style-type: none;
+        }
+
+        .glide__bullets {
+            position: relative;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            list-style-type: none;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .glide__bullet {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 2px solid #f25f3a;
+            margin: 0 0.5rem;
+            -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .glide__arrows {
+            display: none;
+        }
+
+        .glide-name.card-title {
+            font-family: 'Gabarito', sans-serif;
+            font-weight: bold;
+            margin: 20px 0 5px;
+            font-size: 1.375em;
+        }
+
+        .glide-name.card-designation {
+            font-family: 'Gabarito', sans-serif;
+            opacity: .7;
+            font-size: 1em;
+            margin: 10px 0 10px;
+        }
+
+        .glide-text.card-text {
+            font-family: 'Gabarito', sans-serif;
+            margin: 0;
+            font-size: 1.375em;
+            line-height: 1.4;
+        }
+
+        .glide__bullet {
+            border-color: #000;
+            position: relative;
+        }
+
+        .glide__bullet--active:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            transform: translate(-50%, -50%);
+            background: #000;
+            border-radius: 50%;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
+    <script>
+        const testimonialsH = new Headers()
+        testimonialsH.append("Content-Type", "application/json")
+        testimonialsH.append("X-Appwrite-Response-Format", "1.4.0")
+        testimonialsH.append("X-Appwrite-Project", "65d5d7f996a05d41d404")
+
+        const testimonialsOptions = {
+            method: "GET",
+            headers: testimonialsH,
+            redirect: "follow"
+        }
+        const testimonials = document.getElementById('testimonials')
+        const dots = document.getElementById('testimonials-dots')
+
+        fetch("https://cloud.appwrite.io/v1/databases/main/collections/testimonial/documents", testimonialsOptions)
+            .then((response) => response.text())
+            .then((result) => {
+                JSON.parse(result).documents.forEach((item, index) => {
+                    const template = `
+                        <li class="glide__slide">
+                            <div class="card mx-auto">
+                                <p class="glide-text card-text">${item.Text}</p>
+                                <h4 class="glide-name card-title">${item.Name}</h4>
+                                <p class="glide-name card-designation">${item.Designation}</p>
+                            </div>
+                        </li>
+                    `
+
+                    testimonials.innerHTML += template
+
+                    const dotTemplate = `<button class="glide__bullet" data-glide-dir="=${index + 1}"></button>`
+
+                    dots.innerHTML += dotTemplate
+                })
+
+
+                const carousel = new Glide('.glide', {
+                    type: 'carousel',
+                    startAt: 0,
+                    gap: 20,
+                    perView: 1
+                })
+                carousel.mount()
+            })
+    </script>
+</body>
+
+</html>

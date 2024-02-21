@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <div id="testimonials"></div>
+    <div id="faqs"></div>
     <style>
         .preamble__title {
             margin-bottom: 10px;
@@ -82,34 +82,34 @@
         }
     </style>
     <script>
-        const myHeaders = new Headers()
-        myHeaders.append("Content-Type", "application/json")
-        myHeaders.append("X-Appwrite-Response-Format", "1.4.0")
-        myHeaders.append("X-Appwrite-Project", "654a268c90dbc4a33420")
+        const faqsH = new Headers()
+        faqsH.append("Content-Type", "application/json")
+        faqsH.append("X-Appwrite-Response-Format", "1.4.0")
+        faqsH.append("X-Appwrite-Project", "65d5d7f996a05d41d404")
 
-        const requestOptions = {
+        const faqsOptions = {
             method: "GET",
-            headers: myHeaders,
+            headers: faqsH,
             redirect: "follow"
         }
 
-        const testimonials = document.getElementById('testimonials')
-        fetch("https://cloud.appwrite.io/v1/databases/654a277c133c79a331b3/collections/faq/documents", requestOptions)
+        const faqs = document.getElementById('faqs')
+        fetch("https://cloud.appwrite.io/v1/databases/main/collections/faq/documents", faqsOptions)
             .then((response) => response.text())
             .then((result) => {
                 JSON.parse(result).documents.forEach(item => {
                     const template = `<button class="accordion">
                         <span class="accordion__title">
-                            ${item.title}
+                            ${item.Title}
                         </span>
                     </button>
                     <div class="panel">
                         <div class="panel__inner">
-                            ${item.decs}
+                            ${item.Description}
                         </div>
                     </div>`
 
-                    testimonials.innerHTML += template
+                    faqs.innerHTML += template
                 })
 
                 let accordion = document.getElementsByClassName("accordion")
